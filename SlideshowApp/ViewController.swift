@@ -9,6 +9,9 @@
 import UIKit
 
 class ViewController: UIViewController {
+    @IBOutlet weak var stepDownButton: UIButton!
+    @IBOutlet weak var stepUpButton: UIButton!
+    @IBOutlet weak var stopOrRestartButton: UIButton!
     @IBOutlet weak var imageView: UIImageView!
     var timer: Timer!
     var timer_sec: Int = 0
@@ -25,6 +28,7 @@ class ViewController: UIViewController {
         //imageView.isUserInteractionEnabled = true
         imageView.image = image
         self.timer = Timer.scheduledTimer(timeInterval:2, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+        self.changeButtonLabel()
     }
 
     override func didReceiveMemoryWarning() {
@@ -55,16 +59,33 @@ class ViewController: UIViewController {
         }
     }
     
+    func changeButtonLabel(){
+        if self.timer == nil {
+            stepUpButton.isEnabled = true
+            stepDownButton.isEnabled = true
+            stopOrRestartButton.setTitle("再生", for: [])
+        }else{
+            stepUpButton.isEnabled = false
+            stepDownButton.isEnabled = false
+            stopOrRestartButton.setTitle("停止", for: [])
+        }
+    }
+    
     @IBAction func stopOrRestart(_ sender: Any) {
         if self.timer != nil {
             self.timer.invalidate()
             self.timer = nil
+            self.changeButtonLabel()
         }else{
             self.timer = Timer.scheduledTimer(timeInterval:2, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+            self.changeButtonLabel()
         }
     }
     
     @IBAction func onTouchView(_ sender: Any) {
+        self.timer.invalidate()
+        self.timer = nil
+        self.changeButtonLabel()
         let imageNo = (self.timer_sec / 2 ) % 3
         performSegue(withIdentifier: "toSizeup", sender: UIImage(named: imageNameArray[imageNo]))
     }
